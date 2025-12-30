@@ -1,0 +1,302 @@
+*dadbod-snowflakecli.txt*  Snowflake CLI adapter for vim-dadbod
+
+Author:  Adam
+Repo:    https://github.com/yourusername/vim-dadbod-snowflakecli
+License: Same terms as Vim itself (see |license|)
+
+==============================================================================
+CONTENTS                                        *dadbod-snowflakecli-contents*
+
+    1. Introduction .................. |dadbod-snowflakecli-introduction|
+    2. Prerequisites ................. |dadbod-snowflakecli-prerequisites|
+    3. URL Format .................... |dadbod-snowflakecli-url|
+    4. Authentication ................ |dadbod-snowflakecli-auth|
+    5. Query Parameters .............. |dadbod-snowflakecli-params|
+    6. Configuration ................. |dadbod-snowflakecli-config|
+    7. Examples ...................... |dadbod-snowflakecli-examples|
+    8. Troubleshooting ............... |dadbod-snowflakecli-troubleshooting|
+
+==============================================================================
+1. INTRODUCTION                             *dadbod-snowflakecli-introduction*
+
+This plugin provides a Snowflake CLI (snow sql) adapter for vim-dadbod.
+It uses the modern `snow sql` command instead of the legacy `snowsql` tool,
+providing better performance (especially on macOS), full SSO support, and
+table listing for dadbod-ui integration.
+
+Requirements: ~
+  - vim-dadbod (https://github.com/tpope/vim-dadbod)
+  - Snowflake CLI (snow) installed and in PATH
+
+Features: ~
+  - External browser (SSO/SAML) authentication
+  - OAuth token authentication
+  - Key pair (JWT) authentication
+  - Username/password authentication
+  - Named connections from ~/.snowflake/config.toml
+  - Full dadbod-ui integration with table listing
+  - Query parameter support (warehouse, role, schema)
+
+==============================================================================
+2. PREREQUISITES                           *dadbod-snowflakecli-prerequisites*
+
+Install Snowflake CLI: ~
+
+Homebrew (macOS/Linux): >
+    brew tap snowflakedb/snowflake-cli
+    brew install snowflake-cli
+<
+
+pip: >
+    pip install snowflake-cli-labs
+<
+
+Verify installation: >
+    snow --version
+<
+
+==============================================================================
+3. URL FORMAT                                       *dadbod-snowflakecli-url*
+
+Basic format: >
+    snowflakecli://[user[:password]@][account]/[database][?params]
+<
+
+Account Format: ~
+Use `organization-account` format, NOT the full Snowflake URL.
+  Correct:   myorg-myaccount
+  Incorrect: myaccount.snowflakecomputing.com
+
+Examples: >
+    snowflakecli://myuser@myorg-myaccount/mydb
+    snowflakecli://myuser@myorg-myaccount/mydb?authenticator=externalbrowser
+    snowflakecli://myuser:pass@myorg-myaccount/mydb?warehouse=compute_wh
+    snowflakecli://myorg-myaccount/mydb?connection=dev
+<
+
+==============================================================================
+4. AUTHENTICATION                               *dadbod-snowflakecli-auth*
+
+4.1 External Browser (SSO/SAML)          *dadbod-snowflakecli-auth-browser*
+
+Recommended for users with SSO-enabled accounts. Opens browser for
+authentication.
+>
+    :DB snowflakecli://myuser@myorg-myaccount/mydb?authenticator=externalbrowser
+<
+
+With additional parameters: >
+    :DB snowflakecli://myuser@myorg-myaccount/mydb?authenticator=externalbrowser&warehouse=compute_wh&role=analyst
+<
+
+Limitation: Requires GUI environment. Won't work in headless SSH without
+X forwarding.
+
+4.2 Username/Password               *dadbod-snowflakecli-auth-password*
+
+Traditional credential-based authentication: >
+    :DB snowflakecli://myuser:mypassword@myorg-myaccount/mydb
+<
+
+Security Note: Passwords in URLs are visible in vim history. Consider using
+named connections instead (see |dadbod-snowflakecli-auth-named|).
+
+4.3 OAuth Token                         *dadbod-snowflakecli-auth-oauth*
+
+OAuth token-based authentication: >
+    :DB snowflakecli://myuser@myorg-myaccount/mydb?authenticator=oauth&token=YOUR_TOKEN
+<
+
+Note: URL-encode the token if it contains special characters.
+
+4.4 Key Pair (JWT)                    *dadbod-snowflakecli-auth-keypair*
+
+Private key authentication for service accounts: >
+    :DB snowflakecli://myuser@myorg-myaccount/mydb?authenticator=snowflake_jwt&private_key_path=%2Fpath%2Fto%2Fkey.pem
+<
+
+Note: URL-encode the path (/ becomes %2F).
+
+File permissions must be 600: >
+    chmod 600 ~/.ssh/snowflake_key.pem
+<
+
+4.5 Named Connection                   *dadbod-snowflakecli-auth-named*
+
+Best practice: Store credentials in config file and reference by name.
+
+Create connection: >
+    snow connection add
+<
+
+Or edit ~/.snowflake/config.toml directly: >
+    [connections.dev]
+    account = "myorg-myaccount"
+    user = "myuser"
+    authenticator = "externalbrowser"
+    warehouse = "compute_wh"
+    database = "dev_db"
+<
+
+Use in vim: >
+    :DB snowflakecli://myorg-myaccount/mydb?connection=dev
+<
+
+==============================================================================
+5. QUERY PARAMETERS                           *dadbod-snowflakecli-params*
+
+All query parameters map to `snow sql` command-line flags:
+
+authenticator           Authentication method (see |dadbod-snowflakecli-auth|)
+                        Values: externalbrowser, oauth, snowflake_jwt
+                        Example: ?authenticator=externalbrowser
+
+warehouse               Snowflake warehouse name
+                        Example: ?warehouse=compute_wh
+
+role                    Role to use for connection
+                        Example: ?role=analyst
+
+schema                  Default schema
+                        Example: ?schema=public
+
+connection              Named connection from ~/.snowflake/config.toml
+                        When used, other params are ignored
+                        Example: ?connection=dev
+
+token                   OAuth token (used with authenticator=oauth)
+                        Example: ?token=YOUR_OAUTH_TOKEN
+
+private_key_path        Path to private key (used with authenticator=snowflake_jwt)
+                        Must be URL-encoded
+                        Example: ?private_key_path=%2Fhome%2Fuser%2Fkey.pem
+
+Parameters can be combined: >
+    ?authenticator=externalbrowser&warehouse=compute_wh&role=analyst&schema=public
+<
+
+==============================================================================
+6. CONFIGURATION                             *dadbod-snowflakecli-config*
+
+Optional global variables (add to .vimrc or init.vim):
+
+g:dadbod_snowflakecli_default_auth      *g:dadbod_snowflakecli_default_auth*
+
+    Default authenticator method.
+    Default: "externalbrowser"
+>
+    let g:dadbod_snowflakecli_default_auth = 'externalbrowser'
+<
+
+g:dadbod_snowflakecli_timeout              *g:dadbod_snowflakecli_timeout*
+
+    Query timeout in milliseconds.
+    Default: 30000 (30 seconds)
+>
+    let g:dadbod_snowflakecli_timeout = 60000
+<
+
+==============================================================================
+7. EXAMPLES                                 *dadbod-snowflakecli-examples*
+
+Save connection for reuse: >
+    :DB g:snowflake_dev = snowflakecli://myuser@myorg-myaccount/dev_db?authenticator=externalbrowser&warehouse=compute_wh
+<
+
+Interactive console: >
+    :DB g:snowflake_dev
+<
+
+Run query: >
+    :DB g:snowflake_dev SELECT * FROM customers LIMIT 10
+<
+
+Run visual selection: >
+    " Select SQL in visual mode, then:
+    :'<,'>DB g:snowflake_dev
+<
+
+Run query from file: >
+    :DB g:snowflake_dev < query.sql
+<
+
+Ad-hoc query: >
+    :DB snowflakecli://myuser@myorg-myaccount/mydb?authenticator=externalbrowser SELECT CURRENT_USER()
+<
+
+dadbod-ui integration: >
+    :DBUI
+    " Press A to add connection
+    " Enter: snowflakecli://myuser@myorg-myaccount/mydb?authenticator=externalbrowser&warehouse=compute_wh
+<
+
+==============================================================================
+8. TROUBLESHOOTING                   *dadbod-snowflakecli-troubleshooting*
+
+"snow: command not found" ~
+
+Problem: Snowflake CLI is not installed or not in PATH.
+
+Solution:
+  1. Install Snowflake CLI (see |dadbod-snowflakecli-prerequisites|)
+  2. Verify: `snow --version`
+  3. Add to PATH if needed: >
+      export PATH="$PATH:/path/to/snow"
+<
+
+External browser doesn't open ~
+
+Problem: Running in headless environment (SSH without X forwarding).
+
+Solutions:
+  1. Use username/password auth instead
+  2. Use named connection with cached credentials
+  3. Enable X forwarding: `ssh -X user@host`
+
+Tables not showing in dadbod-ui ~
+
+Problem: Schema not specified or insufficient privileges.
+
+Solutions:
+  1. Specify schema explicitly: >
+      ?schema=public
+<
+  2. Check privileges in Snowflake
+  3. Debug table listing: >
+      :echo db#adapter#snowflakecli#tables('your-url')
+<
+
+Authentication fails ~
+
+Solutions:
+  1. Check account format (use organization-account)
+  2. Verify credentials with snow CLI: >
+      snow sql --account myorg-myaccount --user myuser --authenticator externalbrowser --query "SELECT 1"
+<
+  3. Check user permissions in Snowflake
+
+Key pair authentication fails ~
+
+Solutions:
+  1. Check file permissions: >
+      chmod 600 ~/.ssh/snowflake_key.pem
+<
+  2. Verify key format (PEM format required)
+  3. Test with snow CLI directly
+
+URL encoding issues ~
+
+Special characters must be URL-encoded:
+  /  →  %2F
+  :  →  %3A
+  @  →  %40
+  #  →  %23
+  ?  →  %3F
+
+Example with special password: >
+    " Password: my#pass@123
+    :DB snowflakecli://user:my%23pass%40123@account/db
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:

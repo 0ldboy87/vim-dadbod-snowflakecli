@@ -1,0 +1,39 @@
+VIM LICENSE
+
+I)  There are no restrictions on distributing unmodified copies of this
+    software. This software may be included with other software in a
+    distribution. Parts of this software may be distributed separately.
+
+II) It is allowed to distribute a modified (or extended) version of this
+    software, or a part of it, under the following four conditions:
+
+    1) This license text must be included unmodified.
+    2) The modified software must be distributed in a way such that it is
+       possible to obtain the original version of this software, or the
+       modified version should be distributed under a name that is different
+       from the name of the original software.
+    3) The distributor of the modified (or extended) version must send to
+       the maintainer(s) of the original version a copy of the modified
+       source code. This requirement may be waived at the discretion of the
+       maintainer(s).
+    4) The distributor is not allowed to ask for a fee for the modified
+       software, except for a nominal fee for the cost of media and
+       shipping. Donations for the development of this software are
+       accepted, but the distributor is not allowed to suggest that anyone
+       is obliged to make such a donation.
+
+III) If you include this software (or parts of it) in another program, you
+     must include the source code for this software in the distribution, or
+     provide a reference to where it can be obtained. When using a part of
+     this software, the whole of this part must be distributed, including
+     the LICENSE file.
+
+IV)  The contact information (postal address and e-mail address) for the
+     author(s) and maintainer(s) should be included with the software.
+
+V)   This software comes with ABSOLUTELY NO WARRANTY.
+
+VI)  There are no restrictions on using this software. Permission is hereby
+     granted to use this software for any purpose.
+
+     Note: This license is compatible with the GNU GPL.
