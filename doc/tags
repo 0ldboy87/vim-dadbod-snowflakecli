@@ -1,0 +1,17 @@
+dadbod-snowflakecli-auth	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-auth*
+dadbod-snowflakecli-auth-browser	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-auth-browser*
+dadbod-snowflakecli-auth-keypair	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-auth-keypair*
+dadbod-snowflakecli-auth-named	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-auth-named*
+dadbod-snowflakecli-auth-oauth	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-auth-oauth*
+dadbod-snowflakecli-auth-password	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-auth-password*
+dadbod-snowflakecli-config	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-config*
+dadbod-snowflakecli-contents	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-contents*
+dadbod-snowflakecli-examples	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-examples*
+dadbod-snowflakecli-introduction	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-introduction*
+dadbod-snowflakecli-params	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-params*
+dadbod-snowflakecli-prerequisites	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-prerequisites*
+dadbod-snowflakecli-troubleshooting	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-troubleshooting*
+dadbod-snowflakecli-url	dadbod-snowflakecli.txt	/*dadbod-snowflakecli-url*
+dadbod-snowflakecli.txt	dadbod-snowflakecli.txt	/*dadbod-snowflakecli.txt*
+g:dadbod_snowflakecli_default_auth	dadbod-snowflakecli.txt	/*g:dadbod_snowflakecli_default_auth*
+g:dadbod_snowflakecli_timeout	dadbod-snowflakecli.txt	/*g:dadbod_snowflakecli_timeout*
